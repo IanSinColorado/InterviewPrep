@@ -68,7 +68,7 @@ class LinkedList:
         return False
         
     # int[] getValues() return an array of all the values in the linked list, ordered from head to tail.
-    def getValues(self) -> List[int]:
+    def getValues(self) -> list[int]:
         curr = self.head.next
 
         rList = []
