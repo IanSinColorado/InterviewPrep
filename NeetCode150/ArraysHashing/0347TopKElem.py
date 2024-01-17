@@ -9,7 +9,8 @@ class Solution(object):
         """
 
         if len(nums) == 1:
-            return nums[0]
+            # NEED TO RETURN A LIST (in this case of the only item)
+            return [nums[0]]
         
         counter = defaultdict(int)
 
@@ -24,8 +25,8 @@ class Solution(object):
         counterTuple = sorted(counterTuple, reverse=True)
 
         retList = []
+
         for i in range(k):
             retList.append(counterTuple[i][1])
 
         return retList
-
