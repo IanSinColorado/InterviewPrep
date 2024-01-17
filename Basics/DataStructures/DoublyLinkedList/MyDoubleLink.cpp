@@ -4,8 +4,8 @@ class MyListNode {
         MyListNode* next;
         MyListNode* back;
 
-    MyListNode(int val) {
-        val = val;
+    MyListNode(int value) {
+        val = value;
         next = nullptr;
         back = nullptr;
     }
@@ -15,14 +15,12 @@ class MyListNode {
 class MyLinkedList {
 private:
     MyListNode* head;
-    MyListNode* tail;
     int size;
 
 public:
 // MyLinkedList() Initializes the MyLinkedList object.
     MyLinkedList() {
         head = nullptr;
-        tail = head;
         size = 0;
     }
     
@@ -31,17 +29,17 @@ public:
         if(head == nullptr) { return -1; }
         if(index >= size) { return -1; }
 
-        MyListNode* curr = head->next;
+        MyListNode* curr = head;
         int i = 0;
 
-        while(curr != nullptr) {
-            if (i == index) {
-                return curr->val;
+        while(i != index) {
+            if (curr != nullptr) {
+                curr = curr->next;
             }
-
             i++;
-            curr = curr->next;
         }
+
+        if(curr != nullptr) {return (curr->val);}
 
         return -1;
     }
@@ -49,127 +47,111 @@ public:
 // void addAtHead(int val) Add a node of value val before the first element of the linked list. After the insertion, the new node will be the first node of the linked list.
     void addAtHead(int val) {
         MyListNode* newNode = new MyListNode(val);
+        newNode->next = head;
 
-        if (head == nullptr) {
-            // then this is the first node of the linked list
-            head = newNode;
-            tail = head;
-            size++;
-            return;
+        // check to see if there are nodes in the list
+        // if so, set the back link
+        if(head != nullptr) {
+            head->back = newNode;
         }
 
-        newNode->next = head;
-        head->back = newNode;
         head = newNode;
         size++;
     }
     
 // void addAtTail(int val) Append a node of value val as the last element of the linked list.
     void addAtTail(int val) {
+        if(head == nullptr) { addAtHead(val); return; }
         MyListNode* newNode = new MyListNode(val);
+        MyListNode* current = head;
 
-        if (tail == nullptr) {
-            // then this is the first node of the linked list
-            tail = newNode;
-            head = tail;
-            size++;
-            return;
+        // get to the end of the list
+        while(current->next != nullptr) {
+            current = current->next;
         }
 
-        newNode->back = tail;
-        tail->next = newNode;
-        tail = newNode;
+        if(current != nullptr) {
+            current->next = newNode;
+        }
+
+        newNode->back = current;
         size++;
     }
     
 // void addAtIndex(int index, int val) Add a node of value val before the indexth node in the linked list. If index equals the length of the linked list, the node will be appended to the end of the linked list. If index is greater than the length, the node will not be inserted.
     void addAtIndex(int index, int val) {
         if ((index > size) || (index < 0)) { return; }
+
+        // check if its adding at the beginning of the list
+        if (index == 0) { addAtHead(val); return; }
+
+        // check if its addding at the end of the list
+        if (index == size) { addAtTail(val); return; }
         
+        // otherwise, index is somewhere in the current list
         MyListNode* newNode = new MyListNode(val);
+        MyListNode* current = head;
 
-        // add to the beginning of the list
-        if (index == 0) {
-            newNode->next = head;
-            head->back = newNode;
-            head = newNode;
-
-            // check for case where this is the first index
-            if (tail == nullptr) { tail = head; }
-            size++;
-            return;
-        }
-
-        // add to the end of the list
-        if (index == (size - 1)) {
-            newNode->back = tail;
-            tail->next = newNode;
-            tail = newNode;
-
-            // check for case wehre this is the first node
-            if (head == nullptr) { head = tail; }
-            size++;
-            return;
-        }
-
-        // otherwise in the middle of the list
-        MyListNode* curr = head->next;
+        // index counter to stop in the right place
         int i = 0;
 
-        while (i != index) {
-            curr = curr->next;
+        while(i != index) {
+            current = current->next;
             i++;
         }
 
-        // constructive actions
-        newNode->next = curr;
-        newNode->back = curr->back;
-
-        // destructive actions
-        curr->back->next = newNode;
-        curr->back = newNode;
+        current->back->next = newNode;
+        newNode->back = current->back;
+        newNode->next = current;
+        current->back = newNode;
         size++;
     }
     
 // void deleteAtIndex(int index) Delete the indexth node in the linked list, if the index is valid.
     void deleteAtIndex(int index) {
-        if((index >= size) || (index < 0)) { return; }
+        if(head == nullptr) { return; }
+        if((index > size) || (index < 0)) { return; }
+
+        MyListNode* previous = head;
+        MyListNode* current = head;
         
+        // delete at the beginning of the list
         if (index == 0) {
-            MyListNode* del = head;
+            if(head->next != nullptr) {
+                head->next->back = nullptr;
+            }
+            current = head;
             head = head->next;
-            head->back = nullptr;
-            delete del;
-            size--;
-            return;
+            // head->back = nullptr;
+            delete current;
         }
-
-        if (index == (size - 1)) {
-            MyListNode* del = tail;
-            tail = tail->back;
-            tail->next = nullptr;
-            size--;
-            delete del;
-        }
-
-        MyListNode* curr = head->next;
-        int i = 0;
-
-        while (curr != nullptr) {
-            if (i == index) {
-                MyListNode* del = curr;
-
-                curr->back->next = del->next;
-                curr->next = del->back;
-                size--;
-
-                delete del;
+        // delete at the end of the list
+        else if(index == size) {
+            while(current->next != nullptr) {
+                previous = current;
+                current = current->next;
             }
 
-            curr = curr->next;
-            i++;
+            previous->next = nullptr;
+            delete current;
+        } 
+        // delete in the middle of the list
+        else {
+            int i = 0;
+            while(i != index) {
+                previous = current;
+                current = current->next;
+                i++;
+            }
+            if(current->next != nullptr) {
+                current->next->back = previous;
+            }
+            previous->next = current->next;
+
+            delete current;
         }
-        
+
+        size--;
     }
 };
 
@@ -182,3 +164,12 @@ public:
  * obj->addAtIndex(index,val);
  * obj->deleteAtIndex(index);
  */
+int index = 0;
+int val = 1;
+
+MyLinkedList* obj = new MyLinkedList();
+int param_1 = obj->get(index);
+obj->addAtHead(val);
+obj->addAtTail(val);
+obj->addAtIndex(index,val);
+obj->deleteAtIndex(index);
