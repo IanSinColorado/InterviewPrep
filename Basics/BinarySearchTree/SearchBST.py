@@ -12,9 +12,7 @@ class BinarySearchTree(object):
     # REturn a path of how it got there
     def DFS(self, node, path, searchVal):
         if node.val == None:
-            
-
-        path.append(node.val)
+            return None
         if searchVal == node.val:
             return path
         if node.left != None:
@@ -24,8 +22,6 @@ class BinarySearchTree(object):
             path.append("R")
             self.DFS(node.right, path, searchVal)
         
-            
-
     # returns a path
     def search(self, searchVal, searchFunc):
         return searchFunc(searchVal)
