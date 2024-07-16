@@ -9,6 +9,27 @@ class BinarySearchTree(object):
     def __init__(self, node=None):
         self.root = node
 
+    # REturn a path of how it got there
+    def DFS(self, node, path, searchVal):
+        if node.val == None:
+            
+
+        path.append(node.val)
+        if searchVal == node.val:
+            return path
+        if node.left != None:
+            path.append("L")
+            self.DFS(node.left, path, searchVal)
+        if node.right != None:
+            path.append("R")
+            self.DFS(node.right, path, searchVal)
+        
+            
+
+    # returns a path
+    def search(self, searchVal, searchFunc):
+        return searchFunc(searchVal)
+
 
     def preOrder(self):
         return None
